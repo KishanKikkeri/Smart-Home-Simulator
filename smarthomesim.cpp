@@ -188,3 +188,21 @@ public:
 };
 
 //defining derived classes for specific sensors
+class TemperatureSensor : public Sensors{
+private:
+    int temperature = 35;
+public:
+    TemperatureSensor() : Sensors("Temperature") {}
+    void readData(){
+        if(isActive){
+            cout << "Current temperature: " << temperature << " degrees." << endl;
+        } else {
+            cout << type << " sensor is inactive. Cannot read data." << endl;
+        }
+    }
+
+    void setTemperature(int temp){
+        temperature = temp;
+        cout << "Temperature set to " << temperature << " degrees." << endl;
+    }
+};
