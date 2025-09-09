@@ -113,7 +113,8 @@ public:
     void dim(){
         if(isOn){
             cout << name << " light is dimmed." << endl;
-        } else {
+        } 
+        else {
             cout << name << " light is OFF. Cannot dim." << endl;
         }
     }
@@ -125,7 +126,8 @@ public:
     void setSpeed(int speed){
         if(isOn){
             cout << name << " fan speed set to " << speed << "." << endl;
-        } else {
+        } 
+        else {
             cout << name << " fan is OFF. Cannot set speed." << endl;
         }
     }
@@ -137,14 +139,16 @@ public:
     void setTemperature(int temp){
         if(isOn){
             cout << name << " air conditioner temperature set to " << temp << " degrees." << endl;
-        } else {
+        } 
+        else {
             cout << name << " air conditioner is OFF. Cannot set temperature." << endl;
         }
     }
     void setMode(string mode){
         if(isOn){
             cout << name << " air conditioner mode set to " << mode << "." << endl;
-        } else {
+        } 
+        else {
             cout << name << " air conditioner is OFF. Cannot set mode." << endl;
         }
     }
@@ -156,7 +160,8 @@ public:
     void startWashCycle(string cycle){
         if(isOn){
             cout << name << " washing machine started " << cycle << " wash cycle." << endl;
-        } else {
+        } 
+        else {
             cout << name << " washing machine is OFF. Cannot start wash cycle." << endl;
         }
     }
@@ -169,7 +174,8 @@ public:
     void startDishwashCycle(string cycle){
         if(isOn){
             cout << name << " dishwasher started " << cycle << " dishwash cycle." << endl;
-        } else {
+        } 
+        else {
             cout << name << " dishwasher is OFF. Cannot start dishwash cycle." << endl;
         }
     }
@@ -181,7 +187,8 @@ public:
     void setTemperature(int temp){
         if(isOn){
             cout << name << " refrigerator temperature set to " << temp << " degrees." << endl;
-        } else {
+        } 
+        else {
             cout << name << " refrigerator is OFF. Cannot set temperature." << endl;
         }
     }
@@ -196,7 +203,8 @@ public:
     void readData(){
         if(isActive){
             cout << "Current temperature: " << temperature << " degrees." << endl;
-        } else {
+        } 
+        else {
             cout << type << " sensor is inactive. Cannot read data." << endl;
         }
     }
@@ -205,4 +213,117 @@ public:
         temperature = temp;
         cout << "Temperature set to " << temperature << " degrees." << endl;
     }
+
+    virtual void status(){
+        cout << type << " sensor is " << (isActive ? "active" : "inactive") << endl;
+    }
+
+    virtual void activate(){
+        isActive = true;
+        cout << type << " sensor activated." << endl;
+    }
+
+    virtual void deactivate(){
+        isActive = false;
+        cout << type << " sensor deactivated." << endl;
+    }
 };
+
+class MotionSensor : public Sensors{
+public:
+    MotionSensor() : Sensors("Motion") {}
+    void detectMotion(){
+        if(isActive){
+            cout << "Motion detected!" << endl;
+        } 
+        else {
+            cout << type << " sensor is inactive. Cannot detect motion." << endl;
+        }
+    }
+    void disableMotion(){
+        if(isActive){
+            cout << "Motion detection disabled." << endl;
+        } 
+        else {
+            cout << type << " sensor is already inactive." << endl;
+        }
+    }
+    void activateMotion(){
+        if(!isActive){
+            cout << "Motion detection activated." << endl;
+        } 
+        else {
+            cout << type << " sensor is already active." << endl;
+        }
+    }
+};
+
+class HumiditySensor : public Sensors{
+private:
+    int humidity = 50;  //default humidity
+public:
+    HumiditySensor() : Sensors("Humidity") {}
+    void readData(){
+        if(isActive){
+            cout << "Current humidity: " << humidity << "%" << endl;
+        } 
+        else {
+            cout << type << " sensor is inactive. Cannot read data." << endl;
+        }
+    }
+
+    void setHumidity(int hum){
+        humidity = hum;
+        cout << "Humidity set to " << humidity << "%" << endl;
+    }
+
+    virtual void status(){
+        cout << type << " sensor is " << (isActive ? "active" : "inactive") << endl;
+    }
+
+    virtual void activate(){
+        isActive = true;
+        cout << type << " sensor activated." << endl;
+    }
+
+    virtual void deactivate(){
+        isActive = false;
+        cout << type << " sensor deactivated." << endl;
+    }
+};
+
+class rainSensor : public Sensors{
+private:
+    bool isRaining;
+public:
+    rainSensor() : Sensors("Rain"), isRaining(false) {}
+    void detectRain(){
+        if(isActive){
+            isRaining = true;
+            cout << "Rain detected!" << endl;
+        } 
+        else {
+            cout << type << " sensor is inactive. Cannot detect rain." << endl;
+        }
+    }
+    virtual void status(){
+        cout << type << " sensor is " << (isActive ? "active" : "inactive") << endl;
+        if(isActive){
+            cout << "Rain status: " << (isRaining ? "Raining" : "Not Raining") << endl;
+        }
+    }
+    virtual void activate(){
+        isActive = true;
+        cout << type << " sensor activated." << endl;
+    }
+    virtual void deactivate(){
+        isActive = false;
+        isRaining = false;
+        cout << type << " sensor deactivated." << endl;
+    }
+    void setRainStatus(bool status){
+        isRaining = status;
+        cout << "Rain status set to: " << (isRaining ? "Raining" : "Not Raining") << endl;
+    }
+};
+
