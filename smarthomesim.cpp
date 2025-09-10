@@ -327,3 +327,92 @@ public:
     }
 };
 
+int main(){
+    int choice, subchoice, temp, speed, cycle;
+    string mode;
+    cout << "Welcome to the Smart Home Simulator!" << endl;
+    cout << "Select an option to simulate:" << endl;
+    cout << "1. Add Devices" << endl;
+    cout << "2. Control Devices" << endl;
+    cout << "3. Remove Devices" << endl;
+    cout << "4. Exit" << endl;
+    cin >> choice;
+    switch(choice){
+        case 1:{
+            cout << "Select device type to add:" << endl;
+            cout << "1. Appliance" << endl;
+            cout << "2. Sensor" << endl;
+            cout << "3. Door" << endl;
+            cout << "4. Vehicle" << endl;
+            cin >> subchoice;
+            switch(subchoice){
+                case 1:{
+                    cout << "Select appliance type to add:" << endl;
+                    cout << "1. Light" << endl;
+                    cout << "2. Fan" << endl;
+                    cout << "3. Air Conditioner" << endl;
+                    cout << "4. Washing Machine" << endl;
+                    cout << "5. Dishwasher" << endl;
+                    cout << "6. Refrigerator" << endl;
+                    cin >> subchoice;
+                    string name;
+                    cout << "Enter appliance name: ";
+                    cin >> name;
+                    unique_ptr<Appliance> appliance;
+                    switch(subchoice){
+                        case 1:
+                            appliance = make_unique<Light>(name);
+                            break;
+                        case 2:
+                            appliance = make_unique<Fan>(name);
+                            break;
+                        case 3:
+                            appliance = make_unique<AirConditioner>(name);
+                            break;
+                        case 4:
+                            appliance = make_unique<WashingMachine>(name);
+                            break;
+                        case 5:
+                            appliance = make_unique<Dishwasher>(name);
+                            break;
+                        case 6:
+                            appliance = make_unique<Refrigerator>(name);
+                            break;
+                        default:
+                            cout << "Invalid choice." << endl;
+                            return 0;
+                    }
+                    appliance->turnOn();
+                    appliance->status();
+                    break;
+                }
+                case 2:{
+                    cout << "Select sensor type to add:" << endl;
+                    cout << "1. Temperature Sensor" << endl;
+                    cout << "2. Motion Sensor" << endl;
+                    cout << "3. Humidity Sensor" << endl;
+                    cout << "4. Rain Sensor" << endl;
+                    cin >> subchoice;
+                    unique_ptr<Sensors> sensor;
+                    switch(subchoice){
+                        case 1:
+                            sensor = make_unique<TemperatureSensor>();
+                            break;
+                        case 2:
+                            sensor = make_unique<MotionSensor>();
+                            break;
+                        case 3:
+                            sensor = make_unique<HumiditySensor>();
+                            break;
+                        case 4:
+                            sensor = make_unique<rainSensor>();
+                            break;
+                        default:
+                            cout << "Invalid choice." << endl;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
