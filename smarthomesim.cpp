@@ -6,12 +6,12 @@
 #include <memory>
 using namespace std;
 
-class Appliance{ //defining a base class, that other classes will inherit from.
+class Appliance{ 
 protected:
     string name;
     bool isOn;
 public:
-    Appliance(string n) : name(n), isOn(false){} //constructor
+    Appliance(string n) : name(n), isOn(false){} 
 
     virtual ~Appliance(){
         cout << "LOG: Appliance '" << name << "' has been removed." << endl;
@@ -26,11 +26,11 @@ public:
         cout << name << " is now OFF." << endl;
     }
     virtual void status(){
-        cout << name << " is " << (isOn ? "ON" : "OFF") << endl; //using ternary operator
+        cout << name << " is " << (isOn ? "ON" : "OFF") << endl; 
     }
 };
 
-class Sensors{ //defining a second base class for sensors
+class Sensors{ 
 protected:
     string type;
     bool isActive;
@@ -61,7 +61,7 @@ public:
     }
 };
 
-class Doors{//defining a third base class for doors
+class Doors{
 protected:
     string location;
     bool isLocked;
@@ -85,7 +85,7 @@ public:
     }
 };
 
-class Vehicle{//defining a fourth base class for vehicles
+class Vehicle{
 protected:
     string model;
     bool isRunning;
@@ -126,7 +126,7 @@ public:
     }
 };
 
-//defining derived classes for specific appliances
+
 class Light : public Appliance{
 public:
     Light(string n) : Appliance(n) {}
@@ -214,7 +214,6 @@ public:
     }
 };
 
-//defining derived classes for specific sensors
 class TemperatureSensor : public Sensors{
 private:
     int temperature = 35;
@@ -378,25 +377,25 @@ int main(){
                     string name;
                     cout << "Enter appliance name: ";
                     cin >> name;
-                    unique_ptr<Appliance> appliance;
+                    Appliance* appliance = nullptr;
                     switch(subchoice){
                         case 1:
-                            appliance = make_unique<Light>(name);
+                            appliance = new Light(name);
                             break;
                         case 2:
-                            appliance = make_unique<Fan>(name);
+                            appliance = new Fan(name);
                             break;
                         case 3:
-                            appliance = make_unique<AirConditioner>(name);
+                            appliance = new AirConditioner(name);
                             break;
                         case 4:
-                            appliance = make_unique<WashingMachine>(name);
+                            appliance = new WashingMachine(name);
                             break;
                         case 5:
-                            appliance = make_unique<Dishwasher>(name);
+                            appliance = new Dishwasher(name);
                             break;
                         case 6:
-                            appliance = make_unique<Refrigerator>(name);
+                            appliance = new Refrigerator(name);
                             break;
                         default:
                             cout << "Invalid choice." << endl;
@@ -404,6 +403,7 @@ int main(){
                     }
                     appliance->turnOn();
                     appliance->status();
+                    delete appliance; // only change: delete added to match unique_ptr scope
                     break;
                 }
                 case 2:{
@@ -413,22 +413,27 @@ int main(){
                     cout << "3. Humidity Sensor" << endl;
                     cout << "4. Rain Sensor" << endl;
                     cin >> subchoice;
-                    unique_ptr<Sensors> sensor;
+                    Sensors* sensor = nullptr;
                     switch(subchoice){
                         case 1:
-                            sensor = make_unique<TemperatureSensor>();
+                            sensor = new TemperatureSensor();
                             break;
                         case 2:
-                            sensor = make_unique<MotionSensor>();
+                            sensor = new MotionSensor();
                             break;
                         case 3:
-                            sensor = make_unique<HumiditySensor>();
+                            sensor = new HumiditySensor();
                             break;
                         case 4:
-                            sensor = make_unique<rainSensor>();
+                            sensor = new rainSensor();
                             break;
                         default:
                             cout << "Invalid choice." << endl;
+                    }
+                    if(sensor){
+                        sensor->activate(); 
+                        sensor->status();
+                        delete sensor; 
                     }
                 }
             }
@@ -437,4 +442,3 @@ int main(){
     cout << "\nSimulator session ended." << endl;
     return 0;
 }
-
