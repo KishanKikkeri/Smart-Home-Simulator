@@ -386,6 +386,7 @@ int main(){
                     appliance->status();
                     break;
                 }
+                
                 case 2:{
                     cout << "Select sensor type to add:" << endl;
                     cout << "1. Temperature Sensor" << endl;
