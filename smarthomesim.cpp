@@ -176,6 +176,7 @@ public:
 
 class WashingMachine : public Appliance{
 public:
+    friend class Dishwasher; //declaring friend class Dishwasher to access private members of WashingMachine
     WashingMachine(string n) : Appliance(n) {}
     void startWashCycle(string cycle){
         if(isOn){
@@ -188,9 +189,10 @@ public:
 
 };
 
-class Dishwasher : public Appliance{
+//declaring friend class Dishwasher to access private members of WashingMachine
+class dishwasher : public Appliance{
 public:
-    Dishwasher(string n) : Appliance(n) {}
+    dishwasher(string n) : Appliance(n) {}
     void startDishwashCycle(string cycle){
         if(isOn){
             cout << name << " dishwasher started " << cycle << " dishwash cycle." << endl;
@@ -233,19 +235,6 @@ public:
         cout << "Temperature set to " << temperature << " degrees." << endl;
     }
 
-    virtual void status(){
-        cout << type << " sensor is " << (isActive ? "active" : "inactive") << endl;
-    }
-
-    virtual void activate(){
-        isActive = true;
-        cout << type << " sensor activated." << endl;
-    }
-
-    virtual void deactivate(){
-        isActive = false;
-        cout << type << " sensor deactivated." << endl;
-    }
 };
 
 class MotionSensor : public Sensors{
@@ -259,22 +248,7 @@ public:
             cout << type << " sensor is inactive. Cannot detect motion." << endl;
         }
     }
-    void disableMotion(){
-        if(isActive){
-            cout << "Motion detection disabled." << endl;
-        }
-        else {
-            cout << type << " sensor is already inactive." << endl;
-        }
-    }
-    void activateMotion(){
-        if(!isActive){
-            cout << "Motion detection activated." << endl;
-        }
-        else {
-            cout << type << " sensor is already active." << endl;
-        }
-    }
+
 };
 
 class HumiditySensor : public Sensors{
@@ -296,19 +270,6 @@ public:
         cout << "Humidity set to " << humidity << "%" << endl;
     }
 
-    virtual void status(){
-        cout << type << " sensor is " << (isActive ? "active" : "inactive") << endl;
-    }
-
-    virtual void activate(){
-        isActive = true;
-        cout << type << " sensor activated." << endl;
-    }
-
-    virtual void deactivate(){
-        isActive = false;
-        cout << type << " sensor deactivated." << endl;
-    }
 };
 
 class rainSensor : public Sensors{
@@ -324,21 +285,6 @@ public:
         else {
             cout << type << " sensor is inactive. Cannot detect rain." << endl;
         }
-    }
-    virtual void status(){
-        cout << type << " sensor is " << (isActive ? "active" : "inactive") << endl;
-        if(isActive){
-            cout << "Rain status: " << (isRaining ? "Raining" : "Not Raining") << endl;
-        }
-    }
-    virtual void activate(){
-        isActive = true;
-        cout << type << " sensor activated." << endl;
-    }
-    virtual void deactivate(){
-        isActive = false;
-        isRaining = false;
-        cout << type << " sensor deactivated." << endl;
     }
     void setRainStatus(bool status){
         isRaining = status;
@@ -437,7 +383,22 @@ int main(){
                         delete sensor; 
                     }
                 }
+                
             }
+        }
+        case 2:{
+            cout << "Control Devices feature is under development." << endl;
+            break;
+        }
+
+        case 3:{
+            cout << "Remove Devices feature is under development." << endl;
+            break;
+        }
+
+        case 4:{
+            cout << "Exiting simulator." << endl;
+            return 0;
         }
     }
     cout << "\nSimulator session ended." << endl;
