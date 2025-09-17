@@ -46,3 +46,43 @@ public:
     }
 };
 
+class Car : public Vehicle {
+public:
+    Car(string m) : Vehicle(m) {}
+    
+    void turnOnAC(){
+        if(isRunning){
+            cout << "AC has been turned on in the " << model << "." << endl;
+        } else {
+            cout << model << " is not running. Cannot turn on AC." << endl;
+        }
+    }
+};
+
+class Bicycle; // Forward declaration
+
+class Scooter : public Vehicle {
+public:
+    friend class Bicycle;
+    Scooter(string m) : Vehicle(m) {}
+};
+
+class Bicycle : public Vehicle {
+public:
+    friend class Scooter;
+    Bicycle(string m) : Vehicle(m) {}
+
+    void start(){
+        isRunning = true;
+        cout << "Started pedaling the " << model << "." << endl;
+    }
+
+    void stop(){
+        isRunning = false;
+        cout << "Stopped pedaling the " << model << "." << endl;
+    }
+
+    void charge(){
+        cout << "The " << model << " is a bicycle and cannot be charged." << endl;
+    }
+};
