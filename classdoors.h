@@ -29,3 +29,52 @@ public:
     }
 };
 
+class SmartDoor : public Doors {
+private:
+    string accessCode;
+public:
+    SmartDoor(string loc, string code) : Doors(loc), accessCode(code) {}
+
+    void unlock(string codeAttempt){
+        if (codeAttempt == accessCode) {
+            isLocked = false;
+            cout << location << " door is now UNLOCKED." << endl;
+        } else {
+            cout << "Incorrect access code for " << location << " door." << endl;
+        }
+    }
+};
+
+class GarageDoor : public Doors {
+public:
+    GarageDoor(string loc) : Doors(loc) {}
+
+    void open(){
+        unlock();
+        cout << location << " garage door is OPENING." << endl;
+    }
+    void close(){
+        lock();
+        cout << location << " garage door is CLOSING." << endl;
+    }
+};
+
+class LockerDoor : public Doors {
+private:
+    string securityKey;
+public:
+    LockerDoor(string loc, string key) : Doors(loc), securityKey(key) {}
+
+    void unlock(){
+        cout << "Extra security required for " << location << " door. Cannot unlock directly." << endl;
+    }
+
+    void unlockWithKey(string keyAttempt){
+        if (keyAttempt == securityKey) {
+            isLocked = false;
+            cout << location << " locker is now UNLOCKED." << endl;
+        } else {
+            cout << "Invalid security key for " << location << " locker." << endl;
+        }
+    }
+};
