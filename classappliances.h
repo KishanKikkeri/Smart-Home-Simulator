@@ -1,3 +1,6 @@
+#ifndef CLASSAPPLIANCES_H
+#define CLASSAPPLIANCES_H
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,12 +12,11 @@ class Appliance{
 protected:
     string name;
     bool isOn;
-public:
-    Appliance(string n) : name(n), isOn(false){} 
+    double energyConsumption;
 
-    virtual ~Appliance(){
-        cout << "LOG: Appliance '" << name << "' has been removed." << endl;
-    }
+public:
+    Appliance(string n, double energy=1.0) : name(n), isOn(false), energyConsumption(energy) {}
+    virtual ~Appliance(){ cout << "LOG: Appliance '" << name << "' removed.\n"; }
 
     virtual void turnOn(){
         isOn = true;
@@ -25,17 +27,26 @@ public:
         cout << name << " is now OFF." << endl;
     }
     virtual void status(){
-        cout << name << " is " << (isOn ? "ON" : "OFF") << endl; 
+        cout << name << " is " << (isOn ? "ON" : "OFF") << " | Energy: " << energyConsumption << " kWh\n";  
     }
+
+    string getName(){ return name; }
+    bool isOnDevice(){ return isOn; }
+    double getEnergy(){ return energyConsumption; }
+    void setEnergy(double e){ energyConsumption=e; }
 };
 
 
 class Light : public Appliance{
+private:
+    int brightness;
+
 public:
-    Light(string n) : Appliance(n) {}
-    void dim(){
+    Light(string n, double e=0.1) : Appliance(n,e), brightness(100) {}
+    void dim(int b){
         if(isOn){
-            cout << name << " light is dimmed." << endl;
+            brightness = b; 
+            cout << name << " brightness set to " << b << "%\n";
         }
         else {
             cout << name << " light is OFF. Cannot dim." << endl;
@@ -44,11 +55,15 @@ public:
 };
 
 class Fan : public Appliance{
+private:
+    int speed;
+
 public:
-    Fan(string n) : Appliance(n) {}
-    void setSpeed(int speed){
+    Fan(string n, double e=0.2) : Appliance(n,e), speed(0) {}
+    void setSpeed(int sp){
         if(isOn){
-            cout << name << " fan speed set to " << speed << "." << endl;
+            this->speed = sp;
+            cout << name << " speed set to " << sp << endl; 
         }
         else {
             cout << name << " fan is OFF. Cannot set speed." << endl;
@@ -57,10 +72,14 @@ public:
 };
 
 class AirConditioner : public Appliance{
+private:
+    int temperature;
+    string mode;
 public:
-    AirConditioner(string n) : Appliance(n) {}
+    AirConditioner(string n , double e=1.5) : Appliance(n,e), temperature(25), mode("Cool") {}
     void setTemperature(int temp){
         if(isOn){
+            temperature = temp; 
             cout << name << " air conditioner temperature set to " << temp << " degrees." << endl;
         }
         else {
@@ -69,18 +88,20 @@ public:
     }
     void setMode(string mode){
         if(isOn){
+            this->mode = mode;
             cout << name << " air conditioner mode set to " << mode << "." << endl;
         }
         else {
             cout << name << " air conditioner is OFF. Cannot set mode." << endl;
         }
     }
+        int getTemperature(){ return temperature; }
 };
 
 class WashingMachine : public Appliance{
 public:
     friend class Dishwasher; //declaring friend class Dishwasher to access private members of WashingMachine
-    WashingMachine(string n) : Appliance(n) {}
+    WashingMachine(string n, double e=0.8) : Appliance(n,e) {}    
     void startWashCycle(string cycle){
         if(isOn){
             cout << name << " washing machine started " << cycle << " wash cycle." << endl;
@@ -95,7 +116,7 @@ public:
 //declaring friend class Dishwasher to access private members of WashingMachine
 class Dishwasher : public Appliance{
 public:
-    Dishwasher(string n) : Appliance(n) {}
+    Dishwasher(string n, double e=0.7) : Appliance(n,e) {}
     void startDishwashCycle(string cycle){
         if(isOn){
             cout << name << " dishwasher started " << cycle << " dishwash cycle." << endl;
@@ -107,10 +128,13 @@ public:
 };
 
 class Refrigerator : public Appliance{
+private:
+    int temperature;
 public:
-    Refrigerator(string n) : Appliance(n) {}
+    Refrigerator(string n , double e=1.2) : Appliance(n,e), temperature(5) {}
     void setTemperature(int temp){
         if(isOn){
+            temperature = temp;
             cout << name << " refrigerator temperature set to " << temp << " degrees." << endl;
         }
         else {
@@ -119,3 +143,4 @@ public:
     }
 };
 
+#endif // CLASSAPPLIANCES_H
