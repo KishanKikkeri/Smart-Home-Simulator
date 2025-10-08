@@ -1,88 +1,63 @@
+#ifndef CLASSVEHICLES_H
+#define CLASSVEHICLES_H
+
 #include <iostream>
 #include <string>
-#include <vector>
-#include <stdlib.h>
-#include <memory>
 using namespace std;
 
-class Vehicle{
+class Vehicle
+{
 protected:
-    string model;
-    bool isRunning;
+    string name;
+    bool running;
+    double energyConsumption;
+
 public:
-    Vehicle(string m) : model(m), isRunning(false){}
+    Vehicle(string n, double e = 1.0) : name(n), running(false), energyConsumption(e) {}
+    virtual ~Vehicle() { cout << "LOG: Vehicle '" << name << "' removed.\n"; }
 
-    virtual ~Vehicle(){
-        cout << "LOG: " << model << " vehicle has been removed." << endl;
+    void start()
+    {
+        running = true;
+        cout << name << " started.\n";
     }
+    void stop()
+    {
+        running = false;
+        cout << name << " stopped.\n";
+    }
+    void status() { cout << name << " is " << (running ? "Running" : "Stopped") << " | Energy: " << energyConsumption << " kWh\n"; }
 
-    void start(){
-        isRunning = true;
-        cout << model << " vehicle started." << endl;
-    }
-    void stop(){
-        isRunning = false;
-        cout << model << " vehicle stopped." << endl;
-    }
-    void status(){
-        cout << model << " vehicle is " << (isRunning ? "running" : "stopped") << endl;
-    }
-    void drive(){
-        if(isRunning){
-            cout << "Driving the " << model << " vehicle." << endl;
-        } else {
-            cout << model << " vehicle is not running. Cannot drive." << endl;
-        }
-    }
-    void park(){
-        if(isRunning){
-            cout << "Cannot park while the " << model << " vehicle is running." << endl;
-        } else {
-            cout << "Parking the " << model << " vehicle." << endl;
-        }
-    }
-    void charge(){
-        cout << "Charging the " << model << " vehicle." << endl;
+    string getName() { return name; }
+    bool isRunningVehicle() { return running; }
+    double getEnergy() { return energyConsumption; }
+};
+
+class Car : public Vehicle
+{
+public:
+    Car(string n, double e = 1.5) : Vehicle(n, e) {}
+    void turnOnAC()
+    {
+        if (running)
+            cout << "AC on in " << name << endl;
     }
 };
 
-class Car : public Vehicle {
+class Bicycle : public Vehicle
+{
 public:
-    Car(string m) : Vehicle(m) {}
-    
-    void turnOnAC(){
-        if(isRunning){
-            cout << "AC has been turned on in the " << model << "." << endl;
-        } else {
-            cout << model << " is not running. Cannot turn on AC." << endl;
-        }
+    Bicycle(string n) : Vehicle(n, 0) {}
+    void start()
+    {
+        running = true;
+        cout << "Pedaling " << name << endl;
+    }
+    void stop()
+    {
+        running = false;
+        cout << "Stopped pedaling " << name << endl;
     }
 };
 
-class Bicycle; // Forward declaration
-
-class Scooter : public Vehicle {
-public:
-    friend class Bicycle;
-    Scooter(string m) : Vehicle(m) {}
-};
-
-class Bicycle : public Vehicle {
-public:
-    friend class Scooter;
-    Bicycle(string m) : Vehicle(m) {}
-
-    void start(){
-        isRunning = true;
-        cout << "Started pedaling the " << model << "." << endl;
-    }
-
-    void stop(){
-        isRunning = false;
-        cout << "Stopped pedaling the " << model << "." << endl;
-    }
-
-    void charge(){
-        cout << "The " << model << " is a bicycle and cannot be charged." << endl;
-    }
-};
+#endif
