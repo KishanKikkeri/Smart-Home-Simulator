@@ -1,3 +1,6 @@
+#ifndef CLASSSENSORS_H
+#define CLASSSENSORS_H
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -27,68 +30,52 @@ public:
     void status(){
         cout << type << " sensor is " << (isActive ? "active" : "inactive") << endl;
     }
-    void readData(){
-        if(isActive){
-            cout << "Reading data from " << type << " sensor." << endl;
-        } else {
-            cout << type << " sensor is inactive. Cannot read data." << endl;
-        }
-    }
+    
+    string getName(){ return type; }
+    bool isActiveSensor(){ return isActive; }
+
 };
 
 class TemperatureSensor : public Sensors{
 private:
-    int temperature = 35;
+    int temperature;
 public:
-    TemperatureSensor() : Sensors("Temperature") {}
-    void readData(){
-        if(isActive){
-            cout << "Current temperature: " << temperature << " degrees." << endl;
-        }
-        else {
-            cout << type << " sensor is inactive. Cannot read data." << endl;
-        }
-    }
-
-    void setTemperature(int temp){
-        temperature = temp;
-        cout << "Temperature set to " << temperature << " degrees." << endl;
-    }
-
+        TemperatureSensor(string n="TempSensor") : Sensors(n), temperature(25) {}   
+        void setTemperature(int t){ temperature=t; }
+        int getTemperature(){ return temperature; }
+        void randomTemperature(){ temperature = 15 + rand()%20; } // simulate
 };
 
 class MotionSensor : public Sensors{
+private:
+    bool motionDetected;
 public:
-    MotionSensor() : Sensors("Motion") {}
+    MotionSensor(string n="MotionSensor") : Sensors(n), motionDetected(false) {}
     void detectMotion(){
         if(isActive){
-            cout << "Motion detected!" << endl;
+            motionDetected=rand()%2; cout << type << (motionDetected?" detected motion!\n":" no motion.\n"); 
         }
         else {
             cout << type << " sensor is inactive. Cannot detect motion." << endl;
         }
     }
+    bool isMotionDetected(){ return motionDetected; }
+
 
 };
 
 class HumiditySensor : public Sensors{
 private:
-    int humidity = 50;  //default humidity
+    int humidity ;
 public:
-    HumiditySensor() : Sensors("Humidity") {}
-    void readData(){
-        if(isActive){
-            cout << "Current humidity: " << humidity << "%" << endl;
-        }
-        else {
-            cout << type << " sensor is inactive. Cannot read data." << endl;
-        }
-    }
-
+    HumiditySensor(string n="HumiditySensor") : Sensors(n), humidity(50) {}
     void setHumidity(int hum){
         humidity = hum;
         cout << "Humidity set to " << humidity << "%" << endl;
     }
+
+    int getHumidity(){ return humidity; }
+    void randomHumidity(){ humidity = 30 + rand()%40; }
 
 };
 
@@ -106,6 +93,7 @@ public:
             cout << type << " sensor is inactive. Cannot detect rain." << endl;
         }
     }
+    bool isRaining(){ return isRaining; }
     void setRainStatus(bool status){
         isRaining = status;
         cout << "Rain status set to: " << (isRaining ? "Raining" : "Not Raining") << endl;
