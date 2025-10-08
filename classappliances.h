@@ -49,6 +49,18 @@ public:
     void setEnergy(double e){ 
         energyConsumption = e; 
     }
+
+     Appliance operator+(const Appliance& other) const {
+        Appliance temp("Combined");
+        temp.energyConsumption = this->energyConsumption + other.energyConsumption;
+        return temp;
+    }
+
+    Appliance& operator+=(double energy) {
+        this->energyConsumption += energy;
+        return *this;
+    
+    }
 };
 
 class Light : public Appliance

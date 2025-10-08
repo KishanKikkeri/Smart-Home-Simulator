@@ -239,6 +239,9 @@ int main()
     {
         cout << "\n=== Smart Home Simulator ===\n";
         cout << "1. Add Device\n2. Control Device\n3. Device Groups\n4. Automation Rules\n5. Show Status\n6. Show Energy\n7. Scheduling\n8. Exit\nChoice: ";
+        // Add new menu option for operator overloading demo
+        cout << "9. Combine Energy of Two Devices (operator+)\n";
+        cout << "10. Increase Device Energy (operator+=)\n";
         cin >> choice;
 
         switch (choice)
@@ -342,6 +345,74 @@ int main()
             home.schedules.push_back({dname, hr, min, on});
             break;
         }
+        case 9:
+        {
+            if (home.appliances.size() < 2)
+            {
+                cout << "Need at least 2 devices to combine energy.\n";
+                break;
+            }
+            string name1, name2;
+            cout << "Enter first device name: ";
+            cin >> ws;
+            getline(cin, name1);
+            cout << "Enter second device name: ";
+            getline(cin, name2);
+
+            Appliance *a1 = nullptr;
+            Appliance *a2 = nullptr;
+
+            for (auto &a : home.appliances)
+            {
+                if (a->getName() == name1)
+                    a1 = a;
+                if (a->getName() == name2)
+                    a2 = a;
+            }
+
+            if (a1 && a2)
+            {
+                Appliance combined = *a1 + *a2;
+                cout << "\n[Combined Appliance Energy Info]\n";
+                combined.status();
+            }
+            else
+            {
+                cout << "One or both devices not found.\n";
+            }
+            break;
+        }
+
+        case 10:
+        {
+            if (home.appliances.empty())
+            {
+                cout << "No devices to modify.\n";
+                break;
+            }
+            string name;
+            double addEnergy;
+            cout << "Enter device name to increase energy: ";
+            cin >> ws;
+            getline(cin, name);
+            cout << "Enter amount to add (kWh): ";
+            cin >> addEnergy;
+
+            bool found = false;
+            for (auto &a : home.appliances)
+            {
+                if (a->getName() == name)
+                {
+                    *a += addEnergy;
+                    cout << "Updated Energy: " << a->getEnergy() << " kWh\n";
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                cout << "Device not found.\n";
+            break;
+        }
         }
 
         // Simulate time passing for automation and scheduling
@@ -350,6 +421,7 @@ int main()
         home.checkSchedules(ltm->tm_hour, ltm->tm_min);
         home.applyAutomation();
         home.updateEnergy();
+
     } while (choice != 8);
 
     home.saveToFile();
