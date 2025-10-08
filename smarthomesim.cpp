@@ -50,16 +50,16 @@ public:
         cout << "\n--- Device Group: " << groupName << " ---\n";
         for (auto a : appliances)
             if (a)
-                a->showStatus();
+                a->status();
         for (auto s : sensors)
             if (s)
-                s->showStatus();
+                s->status();
         for (auto d : doors)
             if (d)
-                d->showStatus();
+                d->status();
         for (auto v : vehicles)
             if (v)
-                v->showStatus();
+                v->status();
     }
 
     void turnOnAll()
