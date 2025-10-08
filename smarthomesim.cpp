@@ -1,358 +1,357 @@
-//Smart Home simulator
 #include <iostream>
-#include <string>
 #include <vector>
-#include <stdlib.h>
-#include <memory>
-using namespace std;
-//including class headers
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+#include <cstdlib>
+#include <map>
+#include <chrono>
+#include <thread>
 #include "classappliances.h"
 #include "classsensors.h"
 #include "classdoors.h"
 #include "classvehicles.h"
+using namespace std;
 
+// Scheduling structure
+struct Schedule
+{
+    string deviceName;
+    int hour;    // 0-23
+    int minute;  // 0-59
+    bool turnOn; // true=ON, false=OFF
+};
 
-int main(){
-    int choice, subchoice, temp, speed, cycle;
-    string mode;
+// Automation structure
+struct AutomationRule
+{
+    string sensorName;
+    string deviceName;
+    string condition; // ">" "<" "==" etc.
+    int value;
+    bool turnOn; // action
+};
 
-    cout << "Welcome to the Smart Home Simulator!" << endl;
+class DeviceGroup
+{
+    string groupName;
 
-    while (true) {
-        cout << "\nSelect an option to simulate:" << endl;
-        cout << "1. Add Devices" << endl;
-        cout << "2. Control Devices" << endl;
-        cout << "3. Remove Devices" << endl;
-        cout << "4. Exit" << endl;
-        cin >> choice;
+public:
+    vector<Appliance *> appliances;
+    vector<Sensors *> sensors;
+    vector<Doors *> doors;
+    vector<Vehicle *> vehicles;
 
-        switch(choice){
-            case 1:{
-                cout << "Select device type to add:" << endl;
-                cout << "1. Appliance" << endl;
-                cout << "2. Sensor" << endl;
-                cout << "3. Door" << endl;
-                cout << "4. Vehicle" << endl;
-                cin >> subchoice;
-                switch(subchoice){
-                    case 1:{
-                        cout << "Select appliance type to add:" << endl;
-                        cout << "1. Light" << endl;
-                        cout << "2. Fan" << endl;
-                        cout << "3. Air Conditioner" << endl;
-                        cout << "4. Washing Machine" << endl;
-                        cout << "5. Dishwasher" << endl;
-                        cout << "6. Refrigerator" << endl;
-                        cin >> subchoice;
-                        string name;
-                        cout << "Enter appliance name: ";
-                        cin >> name;
-                        Appliance* appliance = nullptr;
-                        switch(subchoice){
-                            case 1:
-                                appliance = new Light(name);
-                                break;
-                            case 2:
-                                appliance = new Fan(name);
-                                break;
-                            case 3:
-                                appliance = new AirConditioner(name);
-                                break;
-                            case 4:
-                                appliance = new WashingMachine(name);
-                                break;
-                            case 5:
-                                appliance = new Dishwasher(name);
-                                break;
-                            case 6:
-                                appliance = new Refrigerator(name);
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                                continue;
-                        }
-                        appliance->turnOn();
-                        appliance->status();
-                        //delete appliance; 
-                        break;
-                    }
-                    
-                    case 2:{
-                        cout << "Select sensor type to add:" << endl;
-                        cout << "1. Temperature Sensor" << endl;
-                        cout << "2. Motion Sensor" << endl;
-                        cout << "3. Humidity Sensor" << endl;
-                        cout << "4. Rain Sensor" << endl;
-                        cin >> subchoice;
-                        Sensors* sensor = nullptr;
-                        switch(subchoice){
-                            case 1:
-                                sensor = new TemperatureSensor();
-                                break;
-                            case 2:
-                                sensor = new MotionSensor();
-                                break;
-                            case 3:
-                                sensor = new HumiditySensor();
-                                break;
-                            case 4:
-                                sensor = new rainSensor();
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                        }
-                        if(sensor){
-                            sensor->activate(); 
-                            //sensor->status();
-                            delete sensor; 
-                        }
-                        break;
-                    }
+    DeviceGroup(string name) : groupName(name) {}
 
-                    case 3:{
-                        cout << "Select door type to add:" << endl;
-                        cout << "1. Front Door" << endl;
-                        cout << "2. Garage Door" << endl;
-                        cout << "3. Back Door" << endl;
-                        cin >> subchoice;
-                        string location;
-                        cout << "Enter door location: ";
-                        cin >> location;
-                        Doors* door = nullptr;
-                        switch(subchoice){
-                            case 1:
-                                door = new SmartDoor(location, "1234");
-                                break;
-                            case 2:
-                                door = new GarageDoor(location);
-                                break;
-                            case 3:
-                                door = new LockerDoor(location, "1234");
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                                continue;
-                        }
-                        door->lock();
-                        door->status();
-                        //delete door; 
-                        break;
-                    }
+    void showStatusAll()
+    {
+        cout << "\n--- Device Group: " << groupName << " ---\n";
+        for (auto a : appliances)
+            if (a)
+                a->showStatus();
+        for (auto s : sensors)
+            if (s)
+                s->showStatus();
+        for (auto d : doors)
+            if (d)
+                d->showStatus();
+        for (auto v : vehicles)
+            if (v)
+                v->showStatus();
+    }
 
-                    case 4:{
-                        cout << "Select vehicle type to add:" << endl;
-                        cout << "1. Car" << endl;
-                        cout << "2. Bike" << endl;
-                        cout << "3. Bicycle" << endl;
-                        cin >> subchoice;
-                        string model;
-                        cout << "Enter vehicle model: ";
-                        cin >> model;
-                        Vehicle* vehicle = nullptr;
-                        switch(subchoice){
-                            case 1:
-                                vehicle = new Car(model);
-                                break;
-                            case 2:
-                                vehicle = new Scooter(model);
-                                break;
-                            case 3:
-                                vehicle = new Bicycle(model);
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                                continue;
-                        }
-                        vehicle->start();
-                        vehicle->status();
-                        delete vehicle; 
-                        break;
-                    }
-                }
-                break;
+    void turnOnAll()
+    {
+        for (auto a : appliances)
+            if (a)
+                a->turnOn();
+    }
+
+    void turnOffAll()
+    {
+        for (auto a : appliances)
+            if (a)
+                a->turnOff();
+    }
+};
+
+class SmartHome
+{
+public:
+    vector<Appliance *> appliances;
+    vector<Sensors *> sensors;
+    vector<Doors *> doors;
+    vector<Vehicle *> vehicles;
+    vector<DeviceGroup *> groups;
+
+    vector<Schedule> schedules;
+    vector<AutomationRule> rules;
+    map<string, double> energyTracker;
+
+    void saveToFile(string fname = "smarthome.txt")
+    {
+        ofstream fout(fname);
+        for (auto a : appliances)
+            fout << "Appliance " << a->getName() << " " << (a->isOnDevice() ? "ON" : "OFF") << "\n";
+        for (auto s : sensors)
+            fout << "Sensor " << s->getName() << " " << (s->isActiveSensor() ? "ON" : "OFF") << "\n";
+        for (auto d : doors)
+            fout << "Door " << d->getName() << " " << (d->isLockedDoor() ? "LOCKED" : "UNLOCKED") << "\n";
+        for (auto v : vehicles)
+            fout << "Vehicle " << v->getName() << " " << (v->isRunningVehicle() ? "ON" : "OFF") << "\n";
+        fout.close();
+    }
+
+    void loadFromFile(string fname = "smarthome.txt")
+    {
+        ifstream fin(fname);
+        if (!fin)
+            return;
+        string line;
+        while (getline(fin, line))
+        {
+            if (line.empty())
+                continue;
+            istringstream iss(line);
+            string type, name, status;
+            iss >> type >> name >> status;
+            if (type == "Appliance")
+            {
+                Appliance *a = new Appliance(name);
+                if (status == "ON")
+                    a->turnOn();
+                appliances.push_back(a);
             }
-
-            case 2:{
-                cout << "Select device type to control:" << endl;
-                cout << "1. Appliance" << endl;
-                cout << "2. Sensor" << endl;
-                cout << "3. Door" << endl;
-                cout << "4. Vehicle" << endl;
-                cin >> subchoice;
-                switch(subchoice){
-                    case 1:
-                        cout << "Select Appliance." << endl;
-                        cout << "1. Light" << endl;
-                        cout << "2. Fan" << endl;
-                        cout << "3. Air Conditioner" << endl;
-                        cout << "4. Washing Machine" << endl;
-                        cout << "5. Dishwasher" << endl;
-                        cout << "6. Refrigerator" << endl;
-                        cin >> subchoice;
-                        switch(subchoice){
-                            case 1:
-                                cout << "Select Operation"<< endl;
-                                cout << "1. Turn On" << endl;
-                                cout << "2. Turn Off" << endl;
-                                cin >> subchoice;
-                                if(subchoice == 1){
-                                    cout << "Light turned ON." << endl;
-                                } 
-                                else if(subchoice == 2){
-                                    cout << "Light turned OFF." << endl;
-                                } 
-                                else {
-                                    cout << "Invalid choice." << endl;
-                                }
-                                break;
-                            case 2:
-                                cout << "Select Operation" << endl;
-                                cout << "1. Turn On" << endl;
-                                cout << "2. Turn Off" << endl;
-                                cin >> subchoice;
-                                if(subchoice == 1){
-                                    cout << "Fan turned ON." << endl;
-                                } 
-                                else if(subchoice == 2){
-                                    cout << "Fan turned OFF." << endl;
-                                } 
-                                else {
-                                    cout << "Invalid choice." << endl;
-                                }
-                                break;
-                            case 3:
-                                cout << "Select Operation" << endl;
-                                cout << "1. Turn On" << endl;
-                                cout << "2. Turn Off" << endl;
-                                cin >> subchoice;
-                                if(subchoice == 1){
-                                    cout << "Air Conditioner turned ON." << endl;
-                                } 
-                                else if(subchoice == 2){
-                                    cout << "Air Conditioner turned OFF." << endl;
-                                } 
-                                else {
-                                    cout << "Invalid choice." << endl;
-                                }
-                                break;
-                            case 4:
-                                cout << "Washing Machine control not implemented in this demo." << endl;
-                                break;
-                            case 5:
-                                cout << "Dishwasher control not implemented in this demo." << endl;
-                                break;
-                            case 6:
-                                cout << "Refrigerator control not implemented in this demo." << endl;
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                        }
-                        break;
-                    case 2:
-                        cout << "Select Sensor." << endl;
-                        cout << "1. Temperature Sensor" << endl;
-                        cout << "2. Motion Sensor" << endl;
-                        cout << "3. Humidity Sensor" << endl;
-                        cout << "4. Rain Sensor" << endl;
-                        cin >> subchoice;
-                        switch(subchoice){
-                            case 1:
-                                cout << "Temperature Sensor control not implemented in this demo." << endl;
-                                break;
-                            case 2:
-                                cout << "Motion Sensor control not implemented in this demo." << endl;
-                                break;
-                            case 3:
-                                cout << "Humidity Sensor control not implemented in this demo." << endl;
-                                break;
-                            case 4:
-                                cout << "Rain Sensor control not implemented in this demo." << endl;
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                        }
-                        break;
-                    case 3:
-                        cout << "Select Door" << endl;
-                        cout << "1. Front Door" << endl;
-                        cout << "2. Garage Door" << endl;
-                        cout << "3. Back Door" << endl;
-                        cin >> subchoice;
-                        switch(subchoice){
-                            case 1:
-                                cout << "Front Door control not implemented in this demo." << endl;
-                                break;
-                            case 2:
-                                cout << "Garage Door control not implemented in this demo." << endl;
-                                break;
-                            case 3:
-                                cout << "Back Door control not implemented in this demo." << endl;
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                        }
-                        break;
-                    case 4:
-                        cout << "Select Vehicle" << endl;
-                        cout << "1. Car" << endl;
-                        cout << "2. Bike" << endl;
-                        cout << "3. Bicycle" << endl;
-                        cin >> subchoice;
-                        switch(subchoice){
-                            case 1:
-                                cout << "Car control not implemented in this demo." << endl;
-                                break;
-                            case 2:
-                                cout << "Bike control not implemented in this demo." << endl;
-                                break;
-                            case 3:
-                                cout << "Bicycle control not implemented in this demo." << endl;
-                                break;
-                            default:
-                                cout << "Invalid choice." << endl;
-                        }
-                        break;
-                    default:
-                        cout << "Invalid choice." << endl;
-                }
-                break;
+            else if (type == "Sensor")
+            {
+                Sensors *s = new Sensors(name);
+                if (status == "ON")
+                    s->activate();
+                sensors.push_back(s);
             }
-
-            case 3:{
-                cout << "select device type to remove:" << endl;
-                cout << "1. Appliance" << endl;
-                cout << "2. Sensor" << endl;
-                cout << "3. Door" << endl;
-                cout << "4. Vehicle" << endl;
-                cin >> subchoice;
-                switch(subchoice){
-                    case 1:
-                        cout << "Appliance removed." << endl; 
-                        break;
-                    case 2:
-                        cout << "Sensor removed." << endl;
-                        break;
-                    case 3:
-                        cout << "Door removed." << endl;
-                        break;
-                    case 4:
-                        cout << "Vehicle removed." << endl;
-                        break;
-                    default:
-                        cout << "Invalid choice." << endl;
-                }
-                break;
+            else if (type == "Door")
+            {
+                Doors *d = new Doors(name);
+                if (status == "UNLOCKED")
+                    d->unlock();
+                doors.push_back(d);
             }
-
-            case 4:{
-                cout << "Exiting simulator." << endl;
-                return 0;
+            else if (type == "Vehicle")
+            {
+                Vehicle *v = new Vehicle(name);
+                if (status == "ON")
+                    v->start();
+                vehicles.push_back(v);
             }
+        }
+        fin.close();
+    }
 
-            default:
-                cout << "Invalid choice." << endl;
+    void checkSchedules(int curHour, int curMin)
+    {
+        for (auto &sch : schedules)
+        {
+            if (sch.hour == curHour && sch.minute == curMin)
+            {
+                for (auto a : appliances)
+                    if (a->getName() == sch.deviceName)
+                    {
+                        if (sch.turnOn)
+                            a->turnOn();
+                        else
+                            a->turnOff();
+                    }
+                for (auto v : vehicles)
+                    if (v->getName() == sch.deviceName)
+                    {
+                        if (sch.turnOn)
+                            v->start();
+                        else
+                            v->stop();
+                    }
+            }
         }
     }
 
-    return 0;
+    void applyAutomation()
+    {
+        for (auto &rule : rules)
+        {
+            Sensors *s = nullptr;
+            Appliance *a = nullptr;
+            for (auto sens : sensors)
+                if (sens->getName() == rule.sensorName)
+                    s = sens;
+            for (auto dev : appliances)
+                if (dev->getName() == rule.deviceName)
+                    a = dev;
+            if (!s || !a)
+                continue;
+            TemperatureSensor *ts = dynamic_cast<TemperatureSensor *>(s);
+            if (ts)
+            {
+                bool trigger = false;
+                if (rule.condition == ">" && ts->getTemperature() > rule.value)
+                    trigger = true;
+                else if (rule.condition == "<" && ts->getTemperature() < rule.value)
+                    trigger = true;
+                else if (rule.condition == "== " && ts->getTemperature() == rule.value)
+                    trigger = true;
+                if (trigger)
+                {
+                    if (rule.turnOn)
+                        a->turnOn();
+                    else
+                        a->turnOff();
+                }
+            }
+        }
+    }
+
+    void updateEnergy()
+    {
+        for (auto a : appliances)
+            if (a->isOnDevice())
+                energyTracker[a->getName()] += a->getEnergy();
+        for (auto v : vehicles)
+            if (v->isRunningVehicle())
+                energyTracker[v->getName()] += v->getEnergy();
+    }
+
+    void showEnergy()
+    {
+        cout << "--- Energy Consumption ---\n";
+        for (auto &e : energyTracker)
+            cout << e.first << ": " << e.second << " kWh\n";
+    }
+};
+
+int main()
+{
+    srand(time(0));
+    SmartHome home;
+    home.loadFromFile();
+
+    int choice;
+    do
+    {
+        cout << "\n=== Smart Home Simulator ===\n";
+        cout << "1. Add Device\n2. Control Device\n3. Device Groups\n4. Automation Rules\n5. Show Status\n6. Show Energy\n7. Scheduling\n8. Exit\nChoice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+        {
+            int t;
+            cout << "1.Appliance 2.Sensor 3.Door 4.Vehicle: ";
+            cin >> t;
+            string name;
+            cout << "Enter name: ";
+            cin >> name;
+            if (t == 1)
+            {
+                Appliance *a = new Appliance(name);
+                a->turnOn();
+                home.appliances.push_back(a);
+            }
+            else if (t == 2)
+            {
+                Sensors *s = new Sensors(name);
+                s->activate();
+                home.sensors.push_back(s);
+            }
+            else if (t == 3)
+            {
+                Doors *d = new Doors(name);
+                d->unlock();
+                home.doors.push_back(d);
+            }
+            else if (t == 4)
+            {
+                Vehicle *v = new Vehicle(name);
+                v->start();
+                home.vehicles.push_back(v);
+            }
+            break;
+        }
+        case 2:
+            cout << "Control device (to be expanded with selection)\n";
+            break;
+        case 3:
+        {
+            string gname;
+            cout << "Enter group name: ";
+            cin >> gname;
+            DeviceGroup *g = new DeviceGroup(gname);
+            g->appliances = home.appliances;
+            g->sensors = home.sensors;
+            g->doors = home.doors;
+            g->vehicles = home.vehicles;
+            g->turnOnAll();
+            home.groups.push_back(g);
+            break;
+        }
+        case 4:
+        {
+            string sname, dname, cond;
+            int val;
+            bool turnOn;
+            cout << "Enter sensor name: ";
+            cin >> sname;
+            cout << "Enter device name: ";
+            cin >> dname;
+            cout << "Condition > < == : ";
+            cin >> cond;
+            cout << "Value to compare: ";
+            cin >> val;
+            cout << "Turn device ON(1) or OFF(0): ";
+            cin >> turnOn;
+            home.rules.push_back({sname, dname, cond, val, turnOn});
+            break;
+        }
+        case 5:
+        {
+            cout << "--- All Devices ---\n";
+            for (auto a : home.appliances)
+                a->status();
+            for (auto s : home.sensors)
+                s->status();
+            for (auto d : home.doors)
+                d->status();
+            for (auto v : home.vehicles)
+                v->status();
+            break;
+        }
+        case 6:
+            home.showEnergy();
+            break;
+        case 7:
+        {
+            string dname;
+            int hr, min;
+            bool on;
+            cout << "Enter device name: ";
+            cin >> dname;
+            cout << "Hour(0-23) Minute(0-59): ";
+            cin >> hr >> min;
+            cout << "Turn ON(1) or OFF(0): ";
+            cin >> on;
+            home.schedules.push_back({dname, hr, min, on});
+            break;
+        }
+        }
+
+        // Simulate time passing for automation and scheduling
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        home.checkSchedules(ltm->tm_hour, ltm->tm_min);
+        home.applyAutomation();
+        home.updateEnergy();
+    } while (choice != 8);
+
+    home.saveToFile();
+    cout << "Data saved. Exiting...\n";
 }
