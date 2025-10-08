@@ -73,7 +73,7 @@ int main(){
                         }
                         appliance->turnOn();
                         appliance->status();
-                        delete appliance; 
+                        //delete appliance; 
                         break;
                     }
                     
@@ -135,7 +135,7 @@ int main(){
                         }
                         door->lock();
                         door->status();
-                        delete door; 
+                        //delete door; 
                         break;
                     }
 
