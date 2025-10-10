@@ -238,10 +238,10 @@ int main()
     do
     {
         cout << "\n=== Smart Home Simulator ===\n";
-        cout << "1. Add Device\n2. Control Device\n3. Device Groups\n4. Automation Rules\n5. Show Status\n6. Show Energy\n7. Scheduling\n8. Exit\nChoice: ";
+        cout << "1. Add Device\n2. Control Device\n3. Device Groups\n4. Automation Rules\n5. Show Status\n6. Show Energy\n7. Scheduling\n8. Exit\n";
         // Add new menu option for operator overloading demo
         cout << "9. Combine Energy of Two Devices (operator+)\n";
-        cout << "10. Increase Device Energy (operator+=)\n";
+        cout << "10. Increase Device Energy (operator+=)\nChoice:";
         cin >> choice;
 
         switch (choice)

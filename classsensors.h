@@ -101,15 +101,15 @@ public:
 class rainSensor : public Sensors
 {
 private:
-    bool isRaining;
+    bool isitRaining;
 
 public:
-    rainSensor() : Sensors("Rain"), isRaining(false) {}
+    rainSensor() : Sensors("Rain"), isitRaining(false) {}
     void detectRain()
     {
         if (isActive)
         {
-            isRaining = true;
+            isitRaining = true;
             cout << "Rain detected!" << endl;
         }
         else
@@ -117,11 +117,13 @@ public:
             cout << type << " sensor is inactive. Cannot detect rain." << endl;
         }
     }
-    bool isRaining() { return isRaining; }
+    bool isRaining(){ 
+        return isitRaining; 
+    }
     void setRainStatus(bool status)
     {
-        isRaining = status;
-        cout << "Rain status set to: " << (isRaining ? "Raining" : "Not Raining") << endl;
+        isitRaining = status;
+        cout << "Rain status set to: " << (isitRaining ? "Raining" : "Not Raining") << endl;
     }
 };
 
