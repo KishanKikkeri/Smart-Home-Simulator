@@ -6,14 +6,13 @@
 #include <ctime>
 #include <cstdlib>
 #include <map>
-#include <chrono>
-#include <thread>
 #include "classappliances.h"
 #include "classsensors.h"
 #include "classdoors.h"
 #include "classvehicles.h"
 using namespace std;
 
+// Scheduling structu
 // Scheduling structure
 struct Schedule
 {
@@ -44,6 +43,16 @@ public:
     vector<Vehicle *> vehicles;
 
     DeviceGroup(string name) : groupName(name) {}
+
+    string getName()
+    {
+        return groupName;
+    }
+
+    void addAppliance(Appliance *appliance)
+    {
+        appliances.push_back(appliance);
+    }
 
     void showStatusAll()
     {
@@ -228,6 +237,167 @@ public:
     }
 };
 
+void manageDeviceGroups(SmartHome &home)
+{
+    int choice;
+    do
+    {
+        cout << "\n--- Device Group Management ---\n";
+        cout << "1. Create New Group\n";
+        cout << "2. Add Device to Group\n";
+        cout << "3. Control Group\n";
+        cout << "4. Show Group Status\n";
+        cout << "5. List All Groups\n";
+        cout << "6. Back to Main Menu\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+        {
+            string gname;
+            cout << "Enter group name: ";
+            cin >> gname;
+            home.groups.push_back(new DeviceGroup(gname));
+            cout << "Group '" << gname << "' created.\n";
+            break;
+        }
+        case 2:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups available. Please create a group first.\n";
+                break;
+            }
+            cout << "Select a group to add a device to:\n";
+            for (int i = 0; i < home.groups.size(); ++i)
+            {
+                cout << i + 1 << ". " << home.groups[i]->getName() << endl;
+            }
+            int groupChoice;
+            cin >> groupChoice;
+            if (groupChoice > 0 && groupChoice <= home.groups.size())
+            {
+                DeviceGroup *selectedGroup = home.groups[groupChoice - 1];
+                cout << "Select a device to add:\n";
+                for (int i = 0; i < home.appliances.size(); ++i)
+                {
+                    cout << i + 1 << ". " << home.appliances[i]->getName() << endl;
+                }
+                int deviceChoice;
+                cin >> deviceChoice;
+                if (deviceChoice > 0 && deviceChoice <= home.appliances.size())
+                {
+                    selectedGroup->addAppliance(home.appliances[deviceChoice - 1]);
+                    cout << "Device added to group.\n";
+                }
+                else
+                {
+                    cout << "Invalid device selection.\n";
+                }
+            }
+            else
+            {
+                cout << "Invalid group selection.\n";
+            }
+            break;
+        }
+        case 3:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups available.\n";
+                break;
+            }
+            cout << "Select a group to control:\n";
+            for (int i = 0; i < home.groups.size(); ++i)
+            {
+                cout << i + 1 << ". " << home.groups[i]->getName() << endl;
+            }
+            int groupChoice;
+            cin >> groupChoice;
+            if (groupChoice > 0 && groupChoice <= home.groups.size())
+            {
+                DeviceGroup *selectedGroup = home.groups[groupChoice - 1];
+                cout << "1. Control All Devices in Group\n";
+                cout << "2. Control an Individual Device in Group\n";
+                int controlChoice;
+                cin >> controlChoice;
+                if (controlChoice == 1)
+                {
+                    cout << "1. Turn On All\n2. Turn Off All\n";
+                    int actionChoice;
+                    cin >> actionChoice;
+                    if (actionChoice == 1)
+                        selectedGroup->turnOnAll();
+                    else if (actionChoice == 2)
+                        selectedGroup->turnOffAll();
+                }
+                else if (controlChoice == 2)
+                {
+                    cout << "Select a device to control:\n";
+                    for (int i = 0; i < selectedGroup->appliances.size(); ++i)
+                    {
+                        cout << i + 1 << ". " << selectedGroup->appliances[i]->getName() << endl;
+                    }
+                    int deviceChoice;
+                    cin >> deviceChoice;
+                    if (deviceChoice > 0 && deviceChoice <= selectedGroup->appliances.size())
+                    {
+                        Appliance *app = selectedGroup->appliances[deviceChoice - 1];
+                        cout << "1. Turn On\n2. Turn Off\n";
+                        int action;
+                        cin >> action;
+                        if (action == 1)
+                            app->turnOn();
+                        else if (action == 2)
+                            app->turnOff();
+                    }
+                }
+            }
+            break;
+        }
+        case 4:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups available.\n";
+                break;
+            }
+            cout << "Select a group to show status:\n";
+            for (int i = 0; i < home.groups.size(); ++i)
+            {
+                cout << i + 1 << ". " << home.groups[i]->getName() << endl;
+            }
+            int groupChoice;
+            cin >> groupChoice;
+            if (groupChoice > 0 && groupChoice <= home.groups.size())
+            {
+                home.groups[groupChoice - 1]->showStatusAll();
+            }
+            break;
+        }
+        case 5:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups have been created yet.\n";
+            }
+            else
+            {
+                cout << "--- All Groups ---\n";
+                for (auto g : home.groups)
+                {
+                    cout << "- " << g->getName() << endl;
+                }
+            }
+            break;
+        }
+        }
+    } while (choice != 6);
+}
+
 int main()
 {
     srand(time(0));
@@ -239,7 +409,6 @@ int main()
     {
         cout << "\n=== Smart Home Simulator ===\n";
         cout << "1. Add Device\n2. Control Device\n3. Device Groups\n4. Automation Rules\n5. Show Status\n6. Show Energy\n7. Scheduling\n8. Exit\n";
-        // Add new menu option for operator overloading demo
         cout << "9. Combine Energy of Two Devices (operator+)\n";
         cout << "10. Increase Device Energy (operator+=)\nChoice:";
         cin >> choice;
@@ -248,35 +417,134 @@ int main()
         {
         case 1:
         {
-            int t;
-            cout << "1.Appliance 2.Sensor 3.Door 4.Vehicle: ";
-            cin >> t;
+            int typeChoice;
+            cout << "Select device type:\n1. Appliance\n2. Sensor\n3. Door\n4. Vehicle\nChoice: ";
+            cin >> typeChoice;
             string name;
-            cout << "Enter name: ";
+            cout << "Enter a name for the device: ";
             cin >> name;
-            if (t == 1)
+
+            if (typeChoice == 1)
             {
-                Appliance *a = new Appliance(name);
-                a->turnOn();
-                home.appliances.push_back(a);
+                int applianceChoice;
+                cout << "Select appliance type:\n1. Light\n2. Fan\n3. Air Conditioner\n4. Washing Machine\n5. Dishwasher\n6. Refrigerator\nChoice: ";
+                cin >> applianceChoice;
+                Appliance *a = nullptr;
+                switch (applianceChoice)
+                {
+                case 1:
+                    a = new Light(name);
+                    break;
+                case 2:
+                    a = new Fan(name);
+                    break;
+                case 3:
+                    a = new AirConditioner(name);
+                    break;
+                case 4:
+                    a = new WashingMachine(name);
+                    break;
+                case 5:
+                    a = new Dishwasher(name);
+                    break;
+                case 6:
+                    a = new Refrigerator(name);
+                    break;
+                default:
+                    cout << "Invalid appliance type.\n";
+                    break;
+                }
+                if (a)
+                {
+                    a->turnOn();
+                    home.appliances.push_back(a);
+                }
             }
-            else if (t == 2)
+            else if (typeChoice == 2)
             {
-                Sensors *s = new Sensors(name);
-                s->activate();
-                home.sensors.push_back(s);
+                int sensorChoice;
+                cout << "Select sensor type:\n1. Temperature\n2. Motion\n3. Humidity\n4. Rain\nChoice: ";
+                cin >> sensorChoice;
+                Sensors *s = nullptr;
+                switch (sensorChoice)
+                {
+                case 1:
+                    s = new TemperatureSensor(name);
+                    break;
+                case 2:
+                    s = new MotionSensor(name);
+                    break;
+                case 3:
+                    s = new HumiditySensor(name);
+                    break;
+                case 4:
+                    s = new rainSensor();
+                    break;
+                default:
+                    cout << "Invalid sensor type.\n";
+                    break;
+                }
+                if (s)
+                {
+                    s->activate();
+                    home.sensors.push_back(s);
+                }
             }
-            else if (t == 3)
+            else if (typeChoice == 3)
             {
-                Doors *d = new Doors(name);
-                d->unlock();
-                home.doors.push_back(d);
+                int doorChoice;
+                cout << "Select door type:\n1. Standard Door\n2. Smart Door\n3. Garage Door\nChoice: ";
+                cin >> doorChoice;
+                Doors *d = nullptr;
+                switch (doorChoice)
+                {
+                case 1:
+                    d = new Doors(name);
+                    break;
+                case 2:
+                {
+                    string code;
+                    cout << "Enter a code for the smart door: ";
+                    cin >> code;
+                    d = new SmartDoor(name, code);
+                    break;
+                }
+                case 3:
+                    d = new GarageDoor(name);
+                    break;
+                default:
+                    cout << "Invalid door type.\n";
+                    break;
+                }
+                if (d)
+                {
+                    d->unlock();
+                    home.doors.push_back(d);
+                }
             }
-            else if (t == 4)
+            else if (typeChoice == 4)
             {
-                Vehicle *v = new Vehicle(name);
-                v->start();
-                home.vehicles.push_back(v);
+                int vehicleChoice;
+                cout << "Select vehicle type:\n1. Car\n2. Bicycle\nChoice: ";
+                cin >> vehicleChoice;
+                Vehicle *v = nullptr;
+                switch (vehicleChoice)
+                {
+                case 1:
+                    v = new Car(name);
+                    break;
+                case 2:
+                    v = new Bicycle(name);
+                    break;
+                default:
+                    cout << "Invalid vehicle type.\n";
+                    break;
+                }
+                if (v)
+                {
+                    v->start();
+                    home.vehicles.push_back(v);
+                }
             }
             break;
         }
@@ -285,16 +553,7 @@ int main()
             break;
         case 3:
         {
-            string gname;
-            cout << "Enter group name: ";
-            cin >> gname;
-            DeviceGroup *g = new DeviceGroup(gname);
-            g->appliances = home.appliances;
-            g->sensors = home.sensors;
-            g->doors = home.doors;
-            g->vehicles = home.vehicles;
-            g->turnOnAll();
-            home.groups.push_back(g);
+            manageDeviceGroups(home);
             break;
         }
         case 4:
