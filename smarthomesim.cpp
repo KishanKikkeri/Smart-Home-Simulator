@@ -6,15 +6,15 @@
 #include <ctime>
 #include <cstdlib>
 #include <map>
-#include <limits> 
+#include <limits> // Required for numeric_limits
 #include "classappliances.h"
 #include "classsensors.h"
 #include "classdoors.h"
 #include "classvehicles.h"
-#include "classmedia.h" 
+#include "classmedia.h" // For SmartTV and Speaker
+
 using namespace std;
 
-// Scheduling structu
 // Scheduling structure
 struct Schedule
 {
@@ -262,7 +262,146 @@ void manageDeviceGroups(SmartHome &home)
 
         switch (choice)
         {
-        // ... (rest of the cases remain the same)
+        case 1:
+        {
+            string gname;
+            cout << "Enter group name: ";
+            cin >> gname;
+            home.groups.push_back(new DeviceGroup(gname));
+            cout << "Group '" << gname << "' created.\n";
+            break;
+        }
+        case 2:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups available. Please create a group first.\n";
+                break;
+            }
+            cout << "Select a group to add a device to:\n";
+            for (int i = 0; i < home.groups.size(); ++i)
+            {
+                cout << i + 1 << ". " << home.groups[i]->getName() << endl;
+            }
+            int groupChoice;
+            cin >> groupChoice;
+            if (groupChoice > 0 && groupChoice <= home.groups.size())
+            {
+                DeviceGroup *selectedGroup = home.groups[groupChoice - 1];
+                cout << "Select a device to add:\n";
+                for (int i = 0; i < home.appliances.size(); ++i)
+                {
+                    cout << i + 1 << ". " << home.appliances[i]->getName() << endl;
+                }
+                int deviceChoice;
+                cin >> deviceChoice;
+                if (deviceChoice > 0 && deviceChoice <= home.appliances.size())
+                {
+                    selectedGroup->addAppliance(home.appliances[deviceChoice - 1]);
+                    cout << "Device added to group.\n";
+                }
+                else
+                {
+                    cout << "Invalid device selection.\n";
+                }
+            }
+            else
+            {
+                cout << "Invalid group selection.\n";
+            }
+            break;
+        }
+        case 3:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups available.\n";
+                break;
+            }
+            cout << "Select a group to control:\n";
+            for (int i = 0; i < home.groups.size(); ++i)
+            {
+                cout << i + 1 << ". " << home.groups[i]->getName() << endl;
+            }
+            int groupChoice;
+            cin >> groupChoice;
+            if (groupChoice > 0 && groupChoice <= home.groups.size())
+            {
+                DeviceGroup *selectedGroup = home.groups[groupChoice - 1];
+                cout << "1. Control All Devices in Group\n";
+                cout << "2. Control an Individual Device in Group\n";
+                int controlChoice;
+                cin >> controlChoice;
+                if (controlChoice == 1)
+                {
+                    cout << "1. Turn On All\n2. Turn Off All\n";
+                    int actionChoice;
+                    cin >> actionChoice;
+                    if (actionChoice == 1)
+                        selectedGroup->turnOnAll();
+                    else if (actionChoice == 2)
+                        selectedGroup->turnOffAll();
+                }
+                else if (controlChoice == 2)
+                {
+                    cout << "Select a device to control:\n";
+                    for (int i = 0; i < selectedGroup->appliances.size(); ++i)
+                    {
+                        cout << i + 1 << ". " << selectedGroup->appliances[i]->getName() << endl;
+                    }
+                    int deviceChoice;
+                    cin >> deviceChoice;
+                    if (deviceChoice > 0 && deviceChoice <= selectedGroup->appliances.size())
+                    {
+                        Appliance *app = selectedGroup->appliances[deviceChoice - 1];
+                        cout << "1. Turn On\n2. Turn Off\n";
+                        int action;
+                        cin >> action;
+                        if (action == 1)
+                            app->turnOn();
+                        else if (action == 2)
+                            app->turnOff();
+                    }
+                }
+            }
+            break;
+        }
+        case 4:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups available.\n";
+                break;
+            }
+            cout << "Select a group to show status:\n";
+            for (int i = 0; i < home.groups.size(); ++i)
+            {
+                cout << i + 1 << ". " << home.groups[i]->getName() << endl;
+            }
+            int groupChoice;
+            cin >> groupChoice;
+            if (groupChoice > 0 && groupChoice <= home.groups.size())
+            {
+                home.groups[groupChoice - 1]->showStatusAll();
+            }
+            break;
+        }
+        case 5:
+        {
+            if (home.groups.empty())
+            {
+                cout << "No groups have been created yet.\n";
+            }
+            else
+            {
+                cout << "--- All Groups ---\n";
+                for (auto g : home.groups)
+                {
+                    cout << "- " << g->getName() << endl;
+                }
+            }
+            break;
+        }
         }
     } while (choice != 6);
 }
@@ -280,7 +419,7 @@ int main()
         cout << "1. Add Device\n2. Control Device\n3. Device Groups\n4. Automation Rules\n5. Show Status\n6. Show Energy\n7. Scheduling\n8. Exit\n";
         cout << "9. Combine Energy of Two Devices (operator+)\n";
         cout << "10. Increase Device Energy (operator+=)\nChoice:";
-
+        
         // Input validation
         while (!(cin >> choice)) {
             cout << "Invalid input. Please enter a number: ";
@@ -294,6 +433,7 @@ int main()
         {
             int typeChoice;
             cout << "Select device type:\n1. Appliance\n2. Sensor\n3. Door\n4. Vehicle\n5. Media\nChoice: "; // Added Media
+            
             // Input validation
             while (!(cin >> typeChoice)) {
                 cout << "Invalid input. Please enter a number: ";
@@ -309,16 +449,38 @@ int main()
             {
                 int applianceChoice;
                 cout << "Select appliance type:\n1. Light\n2. Fan\n3. Air Conditioner\n4. Washing Machine\n5. Dishwasher\n6. Refrigerator\nChoice: ";
+                
                 // Input validation
                 while (!(cin >> applianceChoice)) {
                     cout << "Invalid input. Please enter a number: ";
                     cin.clear();
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 }
+
                 Appliance *a = nullptr;
                 switch (applianceChoice)
                 {
-                // ... (rest of the cases remain the same)
+                case 1:
+                    a = new Light(name);
+                    break;
+                case 2:
+                    a = new Fan(name);
+                    break;
+                case 3:
+                    a = new AirConditioner(name);
+                    break;
+                case 4:
+                    a = new WashingMachine(name);
+                    break;
+                case 5:
+                    a = new Dishwasher(name);
+                    break;
+                case 6:
+                    a = new Refrigerator(name);
+                    break;
+                default:
+                    cout << "Invalid appliance type.\n";
+                    break;
                 }
                 if (a)
                 {
@@ -330,18 +492,34 @@ int main()
             {
                 int sensorChoice;
                 cout << "Select sensor type:\n1. Temperature\n2. Motion\n3. Humidity\n4. Rain\n5. Thermostat\nChoice: "; // Added Thermostat
+                
                 // Input validation
                 while (!(cin >> sensorChoice)) {
                     cout << "Invalid input. Please enter a number: ";
                     cin.clear();
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 }
+
                 Sensors *s = nullptr;
                 switch (sensorChoice)
                 {
-                // ... (rest of the cases remain the same)
+                case 1:
+                    s = new TemperatureSensor(name);
+                    break;
+                case 2:
+                    s = new MotionSensor(name);
+                    break;
+                case 3:
+                    s = new HumiditySensor(name);
+                    break;
+                case 4:
+                    s = new rainSensor();
+                    break;
                 case 5:
                     s = new Thermostat(name);
+                    break;
+                default:
+                    cout << "Invalid sensor type.\n";
                     break;
                 }
                 if (s)
@@ -350,22 +528,96 @@ int main()
                     home.sensors.push_back(s);
                 }
             }
-            // ... (rest of the cases for Door and Vehicle remain the same)
+            else if (typeChoice == 3)
+            {
+                int doorChoice;
+                cout << "Select door type:\n1. Standard Door\n2. Smart Door\n3. Garage Door\nChoice: ";
+                
+                // Input validation
+                while (!(cin >> doorChoice)) {
+                    cout << "Invalid input. Please enter a number: ";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+
+                Doors *d = nullptr;
+                switch (doorChoice)
+                {
+                case 1:
+                    d = new Doors(name);
+                    break;
+                case 2:
+                {
+                    string code;
+                    cout << "Enter a code for the smart door: ";
+                    cin >> code;
+                    d = new SmartDoor(name, code);
+                    break;
+                }
+                case 3:
+                    d = new GarageDoor(name);
+                    break;
+                default:
+                    cout << "Invalid door type.\n";
+                    break;
+                }
+                if (d)
+                {
+                    d->unlock();
+                    home.doors.push_back(d);
+                }
+            }
+            else if (typeChoice == 4)
+            {
+                int vehicleChoice;
+                cout << "Select vehicle type:\n1. Car\n2. Bicycle\nChoice: ";
+
+                // Input validation
+                while (!(cin >> vehicleChoice)) {
+                    cout << "Invalid input. Please enter a number: ";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+
+                Vehicle *v = nullptr;
+                switch (vehicleChoice)
+                {
+                case 1:
+                    v = new Car(name);
+                    break;
+                case 2:
+                    v = new Bicycle(name);
+                    break;
+                default:
+                    cout << "Invalid vehicle type.\n";
+                    break;
+                }
+                if (v)
+                {
+                    v->start();
+                    home.vehicles.push_back(v);
+                }
+            }
             else if (typeChoice == 5) // Added Media
             {
                 int mediaChoice;
-                cout << "Select media device type:\n1. Smart TV\nChoice: ";
+                cout << "Select media device type:\n1. Smart TV\n2. Speaker\nChoice: ";
+                
                 // Input validation
                 while (!(cin >> mediaChoice)) {
                     cout << "Invalid input. Please enter a number: ";
                     cin.clear();
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 }
+
                 Appliance *a = nullptr;
                 switch (mediaChoice)
                 {
                 case 1:
                     a = new SmartTV(name);
+                    break;
+                case 2:
+                    a = new Speaker(name);
                     break;
                 default:
                     cout << "Invalid media device type.\n";
@@ -377,10 +629,64 @@ int main()
                     home.appliances.push_back(a);
                 }
             }
-
             break;
         }
-        // ... (rest of the cases remain the same)
+        case 2:
+            cout << "Control device (to be expanded with selection)\n";
+            break;
+        case 3:
+        {
+            manageDeviceGroups(home);
+            break;
+        }
+        case 4:
+        {
+            string sname, dname, cond;
+            int val;
+            bool turnOn;
+            cout << "Enter sensor name: ";
+            cin >> sname;
+            cout << "Enter device name: ";
+            cin >> dname;
+            cout << "Condition > < == : ";
+            cin >> cond;
+            cout << "Value to compare: ";
+            cin >> val;
+            cout << "Turn device ON(1) or OFF(0): ";
+            cin >> turnOn;
+            home.rules.push_back({sname, dname, cond, val, turnOn});
+            break;
+        }
+        case 5:
+        {
+            cout << "--- All Devices ---\n";
+            for (auto a : home.appliances)
+                a->status();
+            for (auto s : home.sensors)
+                s->status();
+            for (auto d : home.doors)
+                d->status();
+            for (auto v : home.vehicles)
+                v->status();
+            break;
+        }
+        case 6:
+            home.showEnergy();
+            break;
+        case 7:
+        {
+            string dname;
+            int hr, min;
+            bool on;
+            cout << "Enter device name: ";
+            cin >> dname;
+            cout << "Hour(0-23) Minute(0-59): ";
+            cin >> hr >> min;
+            cout << "Turn ON(1) or OFF(0): ";
+            cin >> on;
+            home.schedules.push_back({dname, hr, min, on});
+            break;
+        }
         case 9:
         {
             if (home.appliances.size() < 2)
@@ -461,7 +767,12 @@ int main()
         }
         }
 
-        // ... (rest of the main function remains the same)
+        // Simulate time passing for automation and scheduling
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        home.checkSchedules(ltm->tm_hour, ltm->tm_min);
+        home.applyAutomation();
+        home.updateEnergy();
 
     } while (choice != 8);
 
