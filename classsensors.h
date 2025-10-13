@@ -117,8 +117,8 @@ public:
             cout << type << " sensor is inactive. Cannot detect rain." << endl;
         }
     }
-    bool isRaining(){ 
-        return isitRaining; 
+    bool isRaining(){
+        return isitRaining;
     }
     void setRainStatus(bool status)
     {
@@ -126,5 +126,43 @@ public:
         cout << "Rain status set to: " << (isitRaining ? "Raining" : "Not Raining") << endl;
     }
 };
+
+// --- CORRECTED SECTION ---
+// Thermostat class should be here, outside of the rainSensor class
+class Thermostat : public Sensors {
+private:
+    int temperature;
+    int targetTemperature;
+
+public:
+    Thermostat(string n = "Thermostat") : Sensors(n), temperature(25), targetTemperature(22) {}
+
+    void setTemperature(int t) {
+        temperature = t;
+    }
+
+    int getTemperature() {
+        return temperature;
+    }
+
+    void setTargetTemperature(int target) {
+        targetTemperature = target;
+        cout << "Target temperature for " << getName() << " set to " << target << " degrees.\n";
+    }
+
+    void update() {
+        if (isActive) {
+            // Simulate temperature changes or integrate with a simulated environment
+            if (temperature > targetTemperature) {
+                cout << getName() << ": Temperature is " << temperature << "C. Cooling to reach " << targetTemperature << "C.\n";
+            } else if (temperature < targetTemperature) {
+                cout << getName() << ": Temperature is " << temperature << "C. Heating to reach " << targetTemperature << "C.\n";
+            } else {
+                cout << getName() << ": Temperature is stable at " << targetTemperature << "C.\n";
+            }
+        }
+    }
+};
+
 
 #endif // CLASSSENSORS_H
