@@ -476,20 +476,38 @@ int main()
                 }
 
                 Appliance *a = nullptr;
-                if (applianceChoice == 1)
-                    a = new Light(name);
-                else if (applianceChoice == 2)
-                    a = new Fan(name);
-                else if (applianceChoice == 3)
-                    a = new AirConditioner(name);
-                else if (applianceChoice == 4)
-                    a = new WashingMachine(name);
-                else if (applianceChoice == 5)
-                    a = new Dishwasher(name);
-                else if (applianceChoice == 6)
-                    a = new Refrigerator(name);
-                else
-                    cout << "Invalid appliance type.\n";
+                try//added for memory alloation exception handling
+                {
+                    if (applianceChoice == 1)
+                        a = new Light(name);
+                    else if (applianceChoice == 2)
+                        a = new Fan(name);
+                    else if (applianceChoice == 3)
+                        a = new AirConditioner(name);
+                    else if (applianceChoice == 4)
+                        a = new WashingMachine(name);
+                    else if (applianceChoice == 5)
+                        a = new Dishwasher(name);
+                    else if (applianceChoice == 6)
+                        a = new Refrigerator(name);
+                    else
+                        throw invalid_argument("Invalid appliance type.");
+
+                    if (!a)
+                        throw bad_alloc();
+                }
+                catch (const bad_alloc &e)
+                {
+                    cerr << "Memory allocation failed: " << e.what() << endl;
+                }
+                catch (const invalid_argument &e)
+                {
+                    cerr << "Error: " << e.what() << endl;
+                }
+                catch (...)
+                {
+                    cerr << "Unknown error occurred while adding appliance.\n";
+                }
 
                 if (a)
                 {
@@ -510,6 +528,7 @@ int main()
                 }
 
                 Sensors *s = nullptr;
+                try{//added for memory alloation exception handling
                 if (sensorChoice == 1)
                     s = new TemperatureSensor(name);
                 else if (sensorChoice == 2)
@@ -521,7 +540,23 @@ int main()
                 else if (sensorChoice == 5)
                     s = new Thermostat(name);
                 else
-                    cout << "Invalid sensor type.\n";
+                        throw invalid_argument("Invalid appliance type.");
+                
+                    if (!s)
+                        throw bad_alloc();
+                }
+                catch (const bad_alloc &e)
+                {
+                    cerr << "Memory allocation failed: " << e.what() << endl;
+                }
+                catch (const invalid_argument &e)
+                {
+                    cerr << "Error: " << e.what() << endl;
+                }
+                catch (...)
+                {
+                    cerr << "Unknown error occurred while adding appliance.\n";
+                }
 
                 if (s)
                 {
