@@ -383,45 +383,59 @@ int main()
             break;
         }
 
-        case 10:
+        case 10://using exeption handling
         {
-            if (home.appliances.empty())
-            {
-                cout << "No devices to modify.\n";
-                break;
-            }
-            string name;
-            double addEnergy;
-            cout << "Enter device name to increase energy: ";
-            cin >> ws;
-            getline(cin, name);
-            cout << "Enter amount to add (kWh): ";
-            cin >> addEnergy;
+            try
+{
+    if (home.appliances.empty())
+        throw std::runtime_error("No devices to modify.");
 
-            bool found = false;
-            for (auto &a : home.appliances)
-            {
-                if (a->getName() == name)
-                {
-                    *a += addEnergy;
-                    cout << "Updated Energy: " << a->getEnergy() << " kWh\n";
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-                cout << "Device not found.\n";
+    std::string name;
+    double addEnergy;
+
+    std::cout << "Enter device name to increase energy: ";
+    std::cin >> std::ws;
+    std::getline(std::cin, name);
+
+    std::cout << "Enter amount to add (kWh): ";
+    std::cin >> addEnergy;
+
+    bool found = false;
+    for (auto &a : home.appliances)
+    {
+        if (a->getName() == name)
+        {
+            *a += addEnergy;
+            std::cout << "Updated Energy: " << a->getEnergy() << " kWh\n";
+            found = true;
             break;
         }
+    }
+
+    if (!found)
+        throw std::invalid_argument("Device not found.");
+}
+catch (const std::invalid_argument &e)
+{
+    std::cerr << "Error: " << e.what() << "\n";
+}
+catch (const std::runtime_error &e)
+{
+    std::cerr << "Error: " << e.what() << "\n";
+}
+catch (...)
+{
+    std::cerr << "An unexpected error occurred.\n";
+}
+
+// Simulate time passing for automation and scheduling
+time_t now = time(0);
+tm *ltm = localtime(&now);
+home.checkSchedules(ltm->tm_hour, ltm->tm_min);
+home.applyAutomation();
+home.updateEnergy();
         }
-
-        // Simulate time passing for automation and scheduling
-        time_t now = time(0);
-        tm *ltm = localtime(&now);
-        home.checkSchedules(ltm->tm_hour, ltm->tm_min);
-        home.applyAutomation();
-        home.updateEnergy();
-
+    }
     } while (choice != 8);
 
     home.saveToFile();
