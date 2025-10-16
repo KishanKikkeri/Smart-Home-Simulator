@@ -104,7 +104,7 @@ private:
     bool isitRaining;
 
 public:
-    rainSensor() : Sensors("Rain"), isitRaining(false) {}
+    rainSensor(string n = "RainSensor") : Sensors("Rain"), isitRaining(false) {}
     void detectRain()
     {
         if (isActive)
