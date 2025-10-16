@@ -815,6 +815,7 @@ int main()
         }
 
         case 6:
+            home.updateEnergy();
             home.showEnergy();
             break;
 
@@ -875,7 +876,7 @@ int main()
             break;
         }
 
-        case 10:
+        case 10: //added exexption handling to handle invalid inputs
         {
             try
             {

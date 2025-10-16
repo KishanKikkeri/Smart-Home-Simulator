@@ -1,0 +1,2 @@
+Appliance fan ON
+Appliance room_light ON
