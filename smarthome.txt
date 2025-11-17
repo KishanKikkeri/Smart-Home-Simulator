@@ -1,2 +1,3 @@
 Appliance fan ON
-Appliance room_light ON
+Appliance room_light OFF
+Appliance re ON
