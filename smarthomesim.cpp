@@ -18,8 +18,7 @@
 
 using namespace std;
 
-int main()
-{
+int main(){
     srand(time(0));
     SmartHome home;
     home.loadFromFile();

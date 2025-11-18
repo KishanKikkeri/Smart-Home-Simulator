@@ -145,8 +145,7 @@ public:
     void checkSchedules(int curHour,int curMin){
         for(int i=0;i<(int)schedules.size();i++){
             Schedule &sch=schedules[i];
-            if(sch.hour==curHour&&sch.minute==curMin)
-            {
+            if(sch.hour==curHour&&sch.minute==curMin){
                 for(int j=0;j<(int)appliances.size();j++){
                     if(appliances[j]->getName()==sch.deviceName){
                         if(sch.turnOn)

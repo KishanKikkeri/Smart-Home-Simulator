@@ -15,18 +15,16 @@ public:
         if (isOn) {
             currentChannel = channel;
             cout << name << " channel changed to " << channel << ".\n";
-        } else {
-            cout << name << " is OFF. Cannot change channel.\n";
-        }
+        } 
+        else cout << name << " is OFF. Cannot change channel.\n";
     }
 
     void setVolume(int vol) {
         if (isOn) {
             volume = vol;
             cout << name << " volume set to " << vol << ".\n";
-        } else {
-            cout << name << " is OFF. Cannot set volume.\n";
         }
+        else cout << name << " is OFF. Cannot set volume.\n";
     }
 };
 
@@ -42,18 +40,16 @@ public:
         if (isOn) {
             currentSong = song;
             cout << name << " is now playing " << song << ".\n";
-        } else {
-            cout << name << " is OFF. Cannot play song.\n";
-        }
+        } 
+        else cout << name << " is OFF. Cannot play song.\n";
     }
 
     void setVolume(int vol) {
         if (isOn) {
             volume = vol;
             cout << name << " volume set to " << vol << ".\n";
-        } else {
-            cout << name << " is OFF. Cannot set volume.\n";
-        }
+        } 
+        else cout << name << " is OFF. Cannot set volume.\n";
     }
 };
 

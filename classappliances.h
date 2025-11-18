@@ -102,8 +102,7 @@ public:
     int getTemperature() {return temperature; }
 };
 
-class WashingMachine : public Appliance
-{
+class WashingMachine : public Appliance{
 public:
     friend class Dishwasher; // declaring friend class Dishwasher to access private members of WashingMachine
     WashingMachine(string n, double e = 0.8) : Appliance(n, e) {}
@@ -120,9 +119,7 @@ public:
     }
 };
 
-// declaring friend class Dishwasher to access private members of WashingMachine
-class Dishwasher : public Appliance
-{
+class Dishwasher : public Appliance{
 public:
     Dishwasher(string n, double e = 0.7) : Appliance(n, e) {}
     void startDishwashCycle(string cycle)
@@ -138,8 +135,7 @@ public:
     }
 };
 
-class Refrigerator : public Appliance
-{
+class Refrigerator : public Appliance{
 private:
     int temperature;
 
