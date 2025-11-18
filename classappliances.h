@@ -8,8 +8,7 @@
 #include <memory>
 using namespace std;
 
-class Appliance
-{
+class Appliance{
 protected:
     string name;
     bool isOn;
@@ -19,127 +18,88 @@ public:
     Appliance(string n, double energy = 1.0) : name(n), isOn(false), energyConsumption(energy) {}
     virtual ~Appliance() { cout << "LOG: Appliance '" << name << "' removed.\n"; }
 
-    virtual void turnOn()
-    {
+    virtual void turnOn(){
         isOn = true;
         cout << name << " is now ON." << endl;
     }
-    virtual void turnOff()
-    {
+    virtual void turnOff(){
         isOn = false;
         cout << name << " is now OFF." << endl;
     }
-    virtual void status()
-    {
+    virtual void status(){
         cout << name << " is " << (isOn ? "ON" : "OFF") << " | Energy: " << energyConsumption << " kWh\n";
     }
 
-    string getName(){ 
-        return name; 
-    }
+    string getName(){return name;}
+    bool isOnDevice(){return isOn;}
+    double getEnergy(){return energyConsumption;}
+    void setEnergy(double e){energyConsumption = e;}
 
-    bool isOnDevice(){ 
-        return isOn; 
-    }
-
-    double getEnergy(){ 
-        return energyConsumption; 
-    }
-
-    void setEnergy(double e){ 
-        energyConsumption = e; 
-    }
-
-     Appliance operator+(const Appliance& other) const {
+     Appliance operator+(const Appliance& other) const{
         Appliance temp("Combined");
         temp.energyConsumption = this->energyConsumption + other.energyConsumption;
         return temp;
     }
 
-    Appliance& operator+=(double energy) {
+    Appliance& operator+=(double energy){
         this->energyConsumption += energy;
         return *this;
-    
     }
 };
 
-class Light : public Appliance
-{
+class Light : public Appliance{
 private:
     int brightness;
 
 public:
     Light(string n, double e = 0.1) : Appliance(n, e), brightness(100) {}
-    void dim(int b)
-    {
-        if (isOn)
-        {
+    void dim(int b){
+        if (isOn){
             brightness = b;
             cout << name << " brightness set to " << b << "%\n";
         }
-        else
-        {
-            cout << name << " light is OFF. Cannot dim." << endl;
-        }
+        else cout<<name <<" light is OFF. Cannot dim."<<endl;
     }
 };
 
-class Fan : public Appliance
-{
+class Fan : public Appliance{
 private:
     int speed;
 
 public:
     Fan(string n, double e = 0.2) : Appliance(n, e), speed(0) {}
-    void setSpeed(int sp)
-    {
-        if (isOn)
-        {
+    void setSpeed(int sp){
+        if (isOn){
             this->speed = sp;
             cout << name << " speed set to " << sp << endl;
         }
-        else
-        {
-            cout << name << " fan is OFF. Cannot set speed." << endl;
-        }
+        else cout << name << " fan is OFF. Cannot set speed." << endl;
     }
 };
 
-class AirConditioner : public Appliance
-{
+class AirConditioner : public Appliance{
 private:
     int temperature;
     string mode;
 
 public:
     AirConditioner(string n, double e = 1.5) : Appliance(n, e), temperature(25), mode("Cool") {}
-    void setTemperature(int temp)
-    {
-        if (isOn)
-        {
+    void setTemperature(int temp){
+        if (isOn){
             temperature = temp;
             cout << name << " air conditioner temperature set to " << temp << " degrees." << endl;
         }
-        else
-        {
-            cout << name << " air conditioner is OFF. Cannot set temperature." << endl;
-        }
+        else cout << name << " air conditioner is OFF. Cannot set temperature." << endl;
     }
     void setMode(string mode)
     {
-        if (isOn)
-        {
+        if (isOn){
             this->mode = mode;
             cout << name << " air conditioner mode set to " << mode << "." << endl;
         }
-        else
-        {
-            cout << name << " air conditioner is OFF. Cannot set mode." << endl;
-        }
+        else cout << name << " air conditioner is OFF. Cannot set mode." << endl;
     }
-    int getTemperature() { 
-        return temperature; 
-    }
+    int getTemperature() {return temperature; }
 };
 
 class WashingMachine : public Appliance
