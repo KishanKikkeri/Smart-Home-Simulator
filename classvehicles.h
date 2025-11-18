@@ -5,58 +5,49 @@
 #include <string>
 using namespace std;
 
-class Vehicle
-{
+class Vehicle{
 protected:
     string name;
     bool running;
     double energyConsumption;
 
 public:
-    Vehicle(string n, double e = 1.0) : name(n), running(false), energyConsumption(e) {}
-    virtual ~Vehicle() { cout << "LOG: Vehicle '" << name << "' removed.\n"; }
+    Vehicle(string n, double e = 1.0) : name(n),running(false),energyConsumption(e) {}
+    virtual ~Vehicle(){ cout << "LOG: Vehicle '" <<name<< "' removed.\n"; }
 
-    void start()
-    {
+    void start(){
         running = true;
         cout << name << " started.\n";
     }
-    void stop()
-    {
+    void stop(){
         running = false;
-        cout << name << " stopped.\n";
+        cout <<name<< " stopped.\n";
     }
-    void status() { cout << name << " is " << (running ? "Running" : "Stopped") << " | Energy: " << energyConsumption << " kWh\n"; }
+    void status(){cout<<name<< " is " << (running ? "Running" : "Stopped")<< " | Energy: " <<energyConsumption<< " kWh\n";}
 
-    string getName() { return name; }
-    bool isRunningVehicle() { return running; }
-    double getEnergy() { return energyConsumption; }
+    string getName(){return name;}
+    bool isRunningVehicle(){return running;}
+    double getEnergy(){return energyConsumption;}
 };
 
-class Car : public Vehicle
-{
+class Car : public Vehicle{
 public:
-    Car(string n, double e = 1.5) : Vehicle(n, e) {}
-    void turnOnAC()
-    {
-        if (running)
-            cout << "AC on in " << name << endl;
+    Car(string n,double e = 1.5) : Vehicle(n,e){}
+    void turnOnAC(){
+        if(running) cout<< "AC on in "<<name<<endl;
     }
 };
 
-class Bicycle : public Vehicle
-{
+class Bicycle : public Vehicle{
 public:
     Bicycle(string n) : Vehicle(n, 0) {}
-    void start()
-    {
-        running = true;
-        cout << "Pedaling " << name << endl;
+    void start(){
+        running=true;
+        cout<<"Pedaling"<<name<< endl;
     }
-    void stop()
-    {
-        running = false;
-        cout << "Stopped pedaling " << name << endl;
+    void stop(){
+        running=false;
+        cout<<"Stopped pedaling"<<name<<endl;
     }
 };
 
